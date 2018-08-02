@@ -1,0 +1,74 @@
+# 08/02/2018
+version: "3"
+
+# nginx + php + mysql + redis
+services:
+  nginx:
+    build: ./MyNginx
+    image: nginx:lnmp
+    container_name: nginx
+    depends_on: 
+      - php
+    volumes:
+      - ./MyNginx/www:/usr/share/nginx/html
+      - ./MyNginx/log:/var/log/nginx
+      - ./MyNginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - frontend
+    restart: always
+
+  php:
+    build: ./MyPHP
+    image: php-fpm:lnmp
+    container_name: php-fpm
+    depends_on:
+      - mysql
+    volumes:
+      - ./MyPHP/php-fpm.conf:/usr/local/php/etc/php-fpm.conf
+      - ./MyPHP/www.conf:/usr/local/php/etc/php-fpm.d/www.conf
+      - ./MyPHP/php.ini:/usr/local/php/etc/php.ini
+      - ./MyPHP/log/php-fpm.log:/usr/local/php/var/log/php-fpm.log
+      - ./MyNginx/www:/usr/share/nginx/html
+    ports:
+      - "9000"
+    networks:
+      - frontend
+      - backend
+    restart: always
+
+  mysql:
+    build: ./MyMysql
+    image: mysql:lnmp
+    container_name: mysql
+    volumes:
+      - ./MyMysql/my.cnf:/etc/mysql/my.cnf
+      - ./MyMysql/data:/var/lib/mysql
+    networks:
+      - backend
+    ports:
+      - "3306"
+    restart: always
+
+  redis:
+    build: ./MyRedis
+    image: redis:lnmp
+    container_name: redis
+    environment:
+      MYSQL_ROOT_PASSWORD: horse
+      #MYSQL_DATABASE: testdb
+      #MYSQL_USER: lnmp
+      #MYSQL_PASSWORD: horse
+    volumes:
+      - ./MyRedis/redis.log:/usr/local/etc/redis/redis.log
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    restart: always
+      
+networks:
+  frontend:
+  backend:
