@@ -1,0 +1,6 @@
+/MyMysql/data/
+/MyNginx/log/
+/MyNginx/www/
+/MyPHP/log/
+/MyRedis/redis.log
+

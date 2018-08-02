@@ -1,0 +1,6 @@
+FROM mysql
+MAINTAINER alan
+ENV TZ "Asia/Shanghai"
+ENV MYSQL_ROOT_PASSWORD horse
+EXPOSE 3306
+
